@@ -25,7 +25,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final DataSource dataSource;
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints.tokenStore(jdbcTokenStore(dataSource))
                 .authorizationCodeServices(jdbcAuthorizationCodeServices(dataSource))
                 .approvalStore(jdbcApprovalStore(dataSource))
