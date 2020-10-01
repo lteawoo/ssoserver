@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -23,13 +25,14 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     private final DataSource dataSource;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(jdbcTokenStore(dataSource))
                 .authorizationCodeServices(jdbcAuthorizationCodeServices(dataSource))
                 .approvalStore(jdbcApprovalStore(dataSource))
-                .setClientDetailsService(jdbcClientDetailsService(dataSource));
+                .setClientDetailsService(jdbcClientDetailsService(dataSource, passwordEncoder));
     }
 
     @Bean
@@ -44,8 +47,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Bean
     @Primary
-    public ClientDetailsService jdbcClientDetailsService(DataSource dataSource) {
-        return new JdbcClientDetailsService(dataSource);
+    public ClientDetailsService jdbcClientDetailsService(DataSource dataSource, PasswordEncoder passwordEncoder) throws Exception {
+        ClientDetailsService clientDetailsService = new JdbcClientDetailsServiceBuilder()
+                .passwordEncoder(passwordEncoder)
+                .dataSource(dataSource)
+                .build();
+        return clientDetailsService;
     }
 
     @Bean

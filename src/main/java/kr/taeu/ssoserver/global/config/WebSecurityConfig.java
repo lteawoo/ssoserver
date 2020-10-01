@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -19,19 +19,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-//                .antMatchers("/oauth/authorize/**").authenticated()
-                .anyRequest().authenticated()
+                .antMatchers("/private/**").hasAnyRole("USER") // private/**의 모든 요청은 USER 역할이 있어야함
+                .anyRequest().permitAll() // 다른 요청은 누구든 접근 가능
 //                .exceptionHandling().authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
             .formLogin()
                 .loginProcessingUrl("/login")
-                .loginPage("/login-page")
+                .loginPage("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
                 .permitAll()
                 .and()
             .csrf()
                 .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/user*"))
                 .disable()
             .logout()
+                .deleteCookies("JSESSIONID")
                 .permitAll();
     }
 
@@ -58,6 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
 }
