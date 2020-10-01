@@ -6,24 +6,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="oauth_access_token")
+@Table(name="OAUTH_ACCESS_TOKEN")
 public class AccessToken {
     @Id
-    @Column(name="tokenId")
+    @Column(name="TOKEN_ID")
     private String tokenId;
 
-    @Column(name="token")
+    @Column(name="TOKEN")
     private String token;
 
-    @Column(name="user_name")
+    @Column(name="USER_NAME")
     private String userName;
 
-    @Column(name="authentication_id")
+    @Column(name="AUTHENTICATION_ID")
     private String authenticationId;
 
-    @Column(name="client_id")
+    @Column(name="CLIENT_ID")
     private String clientId;
 
-    @Column(name="authentication")
+    @Column(name="AUTHENTICATION")
     private String authentication;
 }

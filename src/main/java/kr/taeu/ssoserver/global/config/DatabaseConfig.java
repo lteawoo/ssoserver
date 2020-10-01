@@ -1,15 +1,19 @@
 package kr.taeu.ssoserver.global.config;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import java.util.Properties;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Slf4j
@@ -33,10 +37,20 @@ public class DatabaseConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("kr.taeu.ssoserver");
+        factory.setPackagesToScan("kr.taeu");
         factory.setDataSource(dataSource());
         factory.setJpaProperties(additionalProperties());
         return factory;
+    }
+
+    @Bean
+    public JpaTransactionManager transactionManager(EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+        return new JPAQueryFactory(em);
     }
 
     private Properties additionalProperties() {
@@ -45,7 +59,8 @@ public class DatabaseConfig {
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.use_sql_comments", "true");
-        properties.setProperty("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "trace");
+        /*properties.setProperty("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "trace");*/
+        properties.setProperty("logging.level.org.hibernate.type.descriptor.sql", "trace");
         return properties;
     }
 }

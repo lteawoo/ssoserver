@@ -1,10 +1,10 @@
-insert into oauth_client_details (client_id, client_secret,
-    resource_ids, scope, authorized_grant_types,
-    web_server_redirect_uri, authorities, access_token_validity,
-    refresh_token_validity, additional_information,
-    autoapprove, logout_uri, base_uri)
-  values ('taeu_client', 'taeu_secret',
-    null, 'read', 'authorization_code',
+INSERT INTO OAUTH_CLIENT_DETAILS (CLIENT_ID, CLIENT_SECRET,
+    RESOURCE_IDS, SCOPE, AUTHORIZED_GRANT_TYPES,
+    WEB_SERVER_REDIRECT_URI, AUTHORITIES, ACCESS_TOKEN_VALIDITY,
+    REFRESH_TOKEN_VALIDITY, ADDITIONAL_INFORMATION,
+    AUTOAPPROVE, LOGOUT_URI, BASE_URI)
+  VALUES ('taeu_client', 'taeu_secret',
+    NULL, 'read', 'authorization_code',
     'http://localhost:8080/oauthCallback', 'ROLE_YOUR_CLIENT', 36000,
-    2592000, null,
+    2592000, NULL,
     'true', 'http://localhost:8080/logout', 'http://localhost:8080/me');

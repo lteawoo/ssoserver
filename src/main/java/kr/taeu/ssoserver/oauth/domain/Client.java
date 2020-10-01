@@ -6,18 +6,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="oauth_client_details")
+@Table(name="OAUTH_CLIENT_DETAILS")
 public class Client {
     @Id
-    @Column(name="client_id")
+    @Column(name="CLIENT_ID")
     private String clientId;
 
-    @Column(name="web_server_redirect_uri")
+    @Column(name="WEB_SERVER_REDIRECT_URI")
     private String redirectUri;
 
-    @Column(name="logout_uri")
+    @Column(name="LOGOUT_URI")
     private String logoutUri;
 
-    @Column(name="base_uri")
+    @Column(name="BASE_URI")
     private String baseUri;
 }
