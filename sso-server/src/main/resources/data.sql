@@ -4,7 +4,7 @@ INSERT INTO OAUTH_CLIENT_DETAILS (CLIENT_ID, CLIENT_SECRET,
     REFRESH_TOKEN_VALIDITY, ADDITIONAL_INFORMATION,
     AUTOAPPROVE, LOGOUT_URI, BASE_URI)
   VALUES ('taeu_client', 'taeu_secret',
-    NULL, 'read', 'authorization_code',
-    'http://localhost:8080/oauthCallback', 'ROLE_YOUR_CLIENT', 36000,
+    NULL, 'read', 'authorization_code,refresh_code',
+    'http://localhost:8090/oauth/callback', 'MY_CLIENT', 36000,
     2592000, NULL,
     'true', 'http://localhost:8080/logout', 'http://localhost:8080/me');

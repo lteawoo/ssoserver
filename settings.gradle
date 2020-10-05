@@ -1,1 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'ssoserver'
+
+include 'sso-server'
+include 'clients:client1'
+include 'clients:client2'

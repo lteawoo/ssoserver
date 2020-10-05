@@ -1,6 +1,5 @@
 package kr.taeu.ssoserver.global.config;
 
-import kr.taeu.ssoserver.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -30,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .formLogin()
                 .loginProcessingUrl("/login")
-                .loginPage("/login")
+                .loginPage("/login-page")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .permitAll()
@@ -38,6 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf()
                 .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/user*"))
                 .disable()
+            .cors()
+                .configurationSource(corsConfigurationSource())
+                .and()
             .logout()
                 .deleteCookies("JSESSIONID")
                 .permitAll();
@@ -63,6 +68,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("test").password(passwordEncoder().encode("test")).roles("USER").and()
                 .withUser("lteawoo").password(passwordEncoder().encode("test")).roles("USER");*/
         auth.userDetailsService(userDetailsService);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return source;
     }
 
     @Bean

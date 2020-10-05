@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.security.Principal;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class MainController {
@@ -24,7 +25,7 @@ public class MainController {
         return "public";
     }
 
-    @GetMapping(value = "/login")
+    @GetMapping(value = "/login-page")
     public String loginPage() {
         return "sign/loginPage";
     }

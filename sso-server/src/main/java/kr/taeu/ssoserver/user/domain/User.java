@@ -1,6 +1,9 @@
 package kr.taeu.ssoserver.user.domain;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +15,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "USER_BASE")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +27,11 @@ public class User {
 
     @Column(name = "PASSWORD", nullable = false, unique = false, updatable = true)
     private String password;
+
+    @Builder
+    public User(final String username,
+                final String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

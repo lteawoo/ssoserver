@@ -1,0 +1,22 @@
+<html>
+<head>
+    <title>client1</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <script>
+        function test () {
+            axios.get('http://localhost:8090/private')
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                   console.log(error);
+                });
+        }
+    </script>
+    <a href="http://localhost:8090/login-page"><span>login</span></a>
+    <a href="http://localhost:8090/">test
+    </a>
+</body>
+</html>

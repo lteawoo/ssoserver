@@ -1,6 +1,7 @@
 package kr.taeu.ssoserver.user.service;
 
 import kr.taeu.ssoserver.user.domain.User;
+import kr.taeu.ssoserver.user.dto.CreateUserRequest;
 import kr.taeu.ssoserver.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
@@ -28,5 +29,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         authorities.add(role);
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+    }
+
+    public User create(final CreateUserRequest createUserRequest) {
+        final User newUser = User.builder()
+                .username(createUserRequest.getUsername())
+                .password(createUserRequest.getPassword())
+                .build();
+        return userRepository.save(newUser);
     }
 }
