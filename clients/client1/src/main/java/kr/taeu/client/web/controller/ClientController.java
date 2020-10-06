@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -26,31 +25,20 @@ public class ClientController {
 
     @GetMapping("/sso")
     public String sso(HttpServletRequest httpServletRequest) {
-        String state = UUID.randomUUID().toString();
-        httpServletRequest.getSession().setAttribute("state", state);
-
         StringBuilder builder = new StringBuilder();
         builder.append("redirect:")
                 .append("http://localhost:8090/oauth/authorize")
                 .append("?response_type=code")
                 .append("&client_id=taeu_client")
-                .append("&redirect_uri=http://localhost:8091/oauth/callback")
-                .append("&state=")
-                .append(state);
+                .append("&redirect_uri=http://localhost:8091/oauth/callback");
         return builder.toString();
     }
 
     @GetMapping("/oauth/callback")
     @ResponseBody
     public String callback(@RequestParam("code") final String code,
-                           @RequestParam("state") final String state,
                            HttpSession httpSession) {
-        log.info("code: " + code + ", state: " + state);
-
-        // 세션 state 체크
-        String oAuthState = (String)httpSession.getAttribute("state");
-        log.info(oAuthState);
-        httpSession.removeAttribute("state");
+        log.info("code: " + code);
 
         AccessTokenResponse accessTokenResponse = oAuthClientService.requestAccessTokenToAuthServer(code);
 

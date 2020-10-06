@@ -2,6 +2,7 @@ package kr.taeu.ssoserver.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,8 +27,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll() // oauth 관련된건 일단 개방
+                .antMatchers(HttpMethod.POST, "/user").permitAll() // 가입은 개방
                 .antMatchers("/private/**").hasAnyRole("USER") // private/**의 모든 요청은 USER 역할이 있어야함
-                .anyRequest().permitAll() // 다른 요청은 누구든 접근 가능
+                .anyRequest().denyAll()
 //                .exceptionHandling().authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
             .formLogin()

@@ -19,11 +19,16 @@ import java.util.List;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
+    public User get(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+        User user = get(username);
 
+        // 권한부여 임시
         List<GrantedAuthority> authorities = new ArrayList<>();
         GrantedAuthority role = new SimpleGrantedAuthority("ROLE_USER");
         authorities.add(role);
