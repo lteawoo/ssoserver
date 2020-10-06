@@ -6,17 +6,26 @@
 <body>
     <script>
         function test () {
-            axios.get('http://localhost:8090/private')
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                   console.log(error);
-                });
+            var token = document.getElementById("accessToken").value;
+
+            console.log(token);
+
+            axios.get('http://localhost:8090/private', {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+               console.log(error);
+            });
         }
     </script>
-    <a href="http://localhost:8090/login-page"><span>login</span></a>
-    <a href="http://localhost:8090/">test
-    </a>
+    <a href="http://localhost:8091/sso"><span>login</span></a>
+    <br/>
+    <input type="text" id="accessToken">
+    <a href="#" onclick="test()">test</a>
 </body>
 </html>
