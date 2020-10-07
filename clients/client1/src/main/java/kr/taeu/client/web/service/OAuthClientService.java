@@ -30,13 +30,11 @@ public class OAuthClientService {
 //                .build();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth("taeu_client", "taeu_secret"); // client info 작성
+        headers.setBasicAuth("client1", "client1"); // client info 작성
 
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<AccessTokenResponse> responseEntity = restTemplate.exchange(uri.toString(), HttpMethod.POST, requestEntity, AccessTokenResponse.class);
-
-        log.info(requestEntity.toString());
 
         return responseEntity.getBody();
     }

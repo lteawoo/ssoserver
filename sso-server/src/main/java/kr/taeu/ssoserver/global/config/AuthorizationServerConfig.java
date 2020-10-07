@@ -12,11 +12,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.JdbcApprovalStore;
-import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import javax.sql.DataSource;
 
@@ -29,34 +27,54 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(jdbcTokenStore(dataSource))
-                .authorizationCodeServices(jdbcAuthorizationCodeServices(dataSource))
-                .approvalStore(jdbcApprovalStore(dataSource))
-                .setClientDetailsService(jdbcClientDetailsService(dataSource, passwordEncoder));
+        endpoints.accessTokenConverter(jwtAccessTokenConverter())
+                .authorizationCodeServices(jdbcAuthorizationCodeServices())
+                .approvalStore(jdbcApprovalStore())
+                .setClientDetailsService(jdbcClientDetailsService());
     }
 
+    /**
+     * JWT Converter 등록
+     * @return JwtAccessTokenConverter
+     */
     @Bean
-    public AuthorizationCodeServices jdbcAuthorizationCodeServices(DataSource dataSource) {
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        // JWT 사용 설정
+        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setSigningKey("test");
+        return jwtAccessTokenConverter;
+    }
+
+    /**
+     * Auth Code를 DB로 관리
+     * @return AuthorizationCodeServices
+     */
+    @Bean
+    public AuthorizationCodeServices jdbcAuthorizationCodeServices() {
         return new JdbcAuthorizationCodeServices(dataSource);
     }
 
+    /**
+     * 인가 정보를 DB로 관리
+     * @return ApprovalStore
+     */
     @Bean
-    public ApprovalStore jdbcApprovalStore(DataSource dataSource) {
+    public ApprovalStore jdbcApprovalStore() {
         return new JdbcApprovalStore(dataSource);
     }
 
+    /**
+     * Client 정보를 DB로 관리
+     * @return ClientDetailsService
+     * @throws Exception
+     */
     @Bean
     @Primary
-    public ClientDetailsService jdbcClientDetailsService(DataSource dataSource, PasswordEncoder passwordEncoder) throws Exception {
+    public ClientDetailsService jdbcClientDetailsService() throws Exception {
         ClientDetailsService clientDetailsService = new JdbcClientDetailsServiceBuilder()
                 .passwordEncoder(passwordEncoder)
                 .dataSource(dataSource)
                 .build();
         return clientDetailsService;
-    }
-
-    @Bean
-    public TokenStore jdbcTokenStore(DataSource dataSource) {
-        return new JdbcTokenStore(dataSource);
     }
 }

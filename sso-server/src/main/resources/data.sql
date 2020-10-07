@@ -3,7 +3,7 @@ INSERT INTO OAUTH_CLIENT_DETAILS (CLIENT_ID, CLIENT_SECRET,
     WEB_SERVER_REDIRECT_URI, AUTHORITIES, ACCESS_TOKEN_VALIDITY,
     REFRESH_TOKEN_VALIDITY, ADDITIONAL_INFORMATION,
     AUTOAPPROVE, LOGOUT_URI, BASE_URI)
-  VALUES ('taeu_client', 'taeu_secret',
+  VALUES ('client1', 'client1',
     NULL, 'read', 'authorization_code,refresh_token',
     'http://localhost:8091/oauth/callback', 'MY_CLIENT', 300,
     2592000, NULL,

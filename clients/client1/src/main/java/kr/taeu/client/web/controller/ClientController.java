@@ -29,7 +29,7 @@ public class ClientController {
         builder.append("redirect:")
                 .append("http://localhost:8090/oauth/authorize")
                 .append("?response_type=code")
-                .append("&client_id=taeu_client")
+                .append("&client_id=client1")
                 .append("&redirect_uri=http://localhost:8091/oauth/callback");
         return builder.toString();
     }
@@ -37,7 +37,7 @@ public class ClientController {
     @GetMapping("/oauth/callback")
     @ResponseBody
     public String callback(@RequestParam("code") final String code,
-                           HttpSession httpSession) {
+                           final HttpSession httpSession) {
         log.info("code: " + code);
 
         AccessTokenResponse accessTokenResponse = oAuthClientService.requestAccessTokenToAuthServer(code);
