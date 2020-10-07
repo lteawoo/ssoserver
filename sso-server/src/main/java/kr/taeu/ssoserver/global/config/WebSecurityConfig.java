@@ -1,8 +1,11 @@
 package kr.taeu.ssoserver.global.config;
 
+import kr.taeu.ssoserver.global.config.handler.CustomAuthFailuerHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,10 +29,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.requestMatchers()
+                .antMatchers("/login-page", "/login")
+                .antMatchers("/oauth/**")
+                .and()
             .authorizeRequests()
                 .antMatchers("/oauth/authorize").authenticated() // authorize endpoint 인증필요
                 .antMatchers("/oauth/**").permitAll() // oauth 관련된건 일단 개방
+                .anyRequest().authenticated()
                 //.antMatchers(HttpMethod.POST, "/user").permitAll() // 가입은 개방
                 //.antMatchers("/private/**").hasAnyRole("USER") // private/**의 모든 요청은 USER 역할이 있어야함
 //                .exceptionHandling().authenticationEntryPoint(new RestAuthenticationEntryPoint())
@@ -38,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login-page")
                 .usernameParameter("username")
                 .passwordParameter("password")
+                //.failureHandler(authenticationFailureHandler())
                 .permitAll()
                 .and()
             .csrf()
@@ -65,12 +74,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/js/**");
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         /*auth.inMemoryAuthentication()
                 .withUser("test").password(passwordEncoder().encode("test")).roles("USER").and()
                 .withUser("lteawoo").password(passwordEncoder().encode("test")).roles("USER");*/
-        auth.userDetailsService(userDetailsService);
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthFailuerHandler();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return daoAuthenticationProvider;
     }
 
     /**
