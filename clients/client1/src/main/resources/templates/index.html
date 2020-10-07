@@ -10,7 +10,7 @@
 
             console.log(token);
 
-            axios.get('http://localhost:8090/private', {
+            axios.get('http://localhost:8090/v1/user', {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }

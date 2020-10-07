@@ -11,16 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/v1/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public UserResponse get(final String username) {
-        return new UserResponse(userService.get(username));
+    public Principal get(final Principal principal) {
+        return principal;
     }
 
     @PostMapping

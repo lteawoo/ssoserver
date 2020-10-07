@@ -9,12 +9,17 @@ import org.springframework.security.oauth2.config.annotation.builders.JdbcClient
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.JdbcApprovalStore;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.sql.DataSource;
 
@@ -24,10 +29,25 @@ import javax.sql.DataSource;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
+    private final CorsConfigurationSource corsConfigurationSource;
 
+    /**
+     * 토큰 엔드포인트에 대한 보안 제약을 정의
+     */
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer authorizationServerSecurityConfigurer) throws Exception {
+        CorsFilter corsFilter = new CorsFilter(corsConfigurationSource);
+        authorizationServerSecurityConfigurer.addTokenEndpointAuthenticationFilter(corsFilter);
+        // authorizationServerSecurityConfigurer.tokenKeyAccess("isAnonymous()"); // JWT 공개키 endpoint
+    }
+
+    /**
+     * 인가와 토큰 엔드포인트, 토큰 서비스를 정의
+     */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.accessTokenConverter(jwtAccessTokenConverter())
+                .tokenStore(tokenStore())
                 .authorizationCodeServices(jdbcAuthorizationCodeServices())
                 .approvalStore(jdbcApprovalStore())
                 .setClientDetailsService(jdbcClientDetailsService());
@@ -35,7 +55,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * JWT Converter 등록
-     * @return JwtAccessTokenConverter
      */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
@@ -45,9 +64,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return jwtAccessTokenConverter;
     }
 
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+
     /**
      * Auth Code를 DB로 관리
-     * @return AuthorizationCodeServices
      */
     @Bean
     public AuthorizationCodeServices jdbcAuthorizationCodeServices() {
@@ -56,7 +79,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * 인가 정보를 DB로 관리
-     * @return ApprovalStore
      */
     @Bean
     public ApprovalStore jdbcApprovalStore() {
@@ -65,8 +87,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * Client 정보를 DB로 관리
-     * @return ClientDetailsService
-     * @throws Exception
      */
     @Bean
     @Primary
