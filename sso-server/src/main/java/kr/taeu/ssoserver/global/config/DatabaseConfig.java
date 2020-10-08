@@ -25,6 +25,7 @@ public class DatabaseConfig {
         // no need shutdown, EmbeddedDatabaseFactoryBean will take care of this
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
         EmbeddedDatabase db = builder.setType(EmbeddedDatabaseType.H2) // .H2 or .DERBY
+                .addScript("classpath:schema-h2.sql")
                 .build();
         return db;
     }
