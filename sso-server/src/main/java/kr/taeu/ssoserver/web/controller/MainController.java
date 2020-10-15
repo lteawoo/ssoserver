@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import javax.servlet.http.HttpSession;
@@ -15,8 +16,10 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class MainController {
     @GetMapping(value = "/")
-    public String home() {
-        return "index";
+    @ResponseBody
+    public String home(HttpSession httpSession) {
+        httpSession.setAttribute("name", "testTaeu");
+        return httpSession.getId() + "\nHello Redis " + httpSession.getAttribute("name");
     }
 
     @GetMapping(value = "/private")
@@ -31,10 +34,11 @@ public class MainController {
     }
 
     @GetMapping(value = "/login-page")
-    public String loginPage() {
+    public String loginPage(HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         log.info("================================================");
         log.info(auth.toString());
+        log.info("session {}", httpSession.getId());
         log.info("================================================");
         return "sign/loginPage";
     }

@@ -8,3 +8,14 @@ INSERT INTO OAUTH_CLIENT_DETAILS (CLIENT_ID, CLIENT_SECRET,
     'http://localhost:8091/oauth/callback', 'MY_CLIENT', 300,
     2592000, NULL,
     'true', 'http://localhost:8090/logout', NULL);
+
+INSERT INTO OAUTH_CLIENT_DETAILS (CLIENT_ID, CLIENT_SECRET,
+    RESOURCE_IDS, SCOPE, AUTHORIZED_GRANT_TYPES,
+    WEB_SERVER_REDIRECT_URI, AUTHORITIES, ACCESS_TOKEN_VALIDITY,
+    REFRESH_TOKEN_VALIDITY, ADDITIONAL_INFORMATION,
+    AUTOAPPROVE, LOGOUT_URI, BASE_URI)
+  VALUES ('client2', 'client2',
+    NULL, 'read', 'authorization_code,refresh_token',
+    'http://localhost:8092/oauth/callback', 'MY_CLIENT', 300,
+    2592000, NULL,
+    'true', 'http://localhost:8090/logout', NULL);

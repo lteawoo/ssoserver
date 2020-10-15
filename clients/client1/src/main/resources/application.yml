@@ -4,3 +4,8 @@ server:
 logging:
   level:
     root: info
+
+taeu:
+  clientId: client1
+  clientSecret: client1
+  redirectUri: http://localhost:8091/oauth/callback

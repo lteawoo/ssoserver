@@ -1,6 +1,7 @@
 package kr.taeu.ssoserver.global.config;
 
 import kr.taeu.ssoserver.global.config.handler.CustomAuthFailuerHandler;
+import kr.taeu.ssoserver.global.config.handler.CustomAuthSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.requestMatchers()
-                .antMatchers("/login-page", "/login", "/private")
+                .antMatchers("/login-page", "/login", "/private", "/logout")
                 .antMatchers("/oauth/**")
                 .and()
             .authorizeRequests()
@@ -46,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login-page")
                 .usernameParameter("username")
                 .passwordParameter("password")
+                .successHandler(authenticationSuccessHandler())
                 //.failureHandler(authenticationFailureHandler())
                 .permitAll()
                 .and()
@@ -56,7 +59,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .configurationSource(corsConfigurationSource())
                 .and()
             .logout()
-                .deleteCookies("JSESSIONID")
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .permitAll();
     }
 
@@ -86,6 +91,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("test").password(passwordEncoder().encode("test")).roles("USER").and()
                 .withUser("lteawoo").password(passwordEncoder().encode("test")).roles("USER");*/
         auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomAuthSuccessHandler();
     }
 
     @Bean

@@ -4,6 +4,7 @@ import kr.taeu.client.web.dto.AccessTokenResponse;
 import kr.taeu.client.web.service.OAuthClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +18,10 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class ClientController {
     private final OAuthClientService oAuthClientService;
-
+    @Value("${taeu.clientId}")
+    private String clientId;
+    @Value("${taeu.redirectUri}")
+    private String redirectUri;
     @GetMapping()
     public String index() {
         return "index";
@@ -29,8 +33,8 @@ public class ClientController {
         builder.append("redirect:")
                 .append("http://localhost:8090/oauth/authorize")
                 .append("?response_type=code")
-                .append("&client_id=client1")
-                .append("&redirect_uri=http://localhost:8091/oauth/callback");
+                .append("&client_id=" + clientId)
+                .append("&redirect_uri=" + redirectUri);
         return builder.toString();
     }
 

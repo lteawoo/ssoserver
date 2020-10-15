@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -32,6 +33,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final PasswordEncoder passwordEncoder;
     private final CorsConfigurationSource corsConfigurationSource;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
     /**
      * 토큰 엔드포인트에 대한 보안 제약을 정의
@@ -40,7 +42,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerSecurityConfigurer authorizationServerSecurityConfigurer) throws Exception {
         CorsFilter corsFilter = new CorsFilter(corsConfigurationSource);
         authorizationServerSecurityConfigurer.addTokenEndpointAuthenticationFilter(corsFilter);
-        // authorizationServerSecurityConfigurer.tokenKeyAccess("isAnonymous()"); // JWT 공개키 endpoint
+        authorizationServerSecurityConfigurer.checkTokenAccess("isAuthenticated()");
     }
 
     /**
@@ -53,6 +55,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authenticationManager)
                 .authorizationCodeServices(jdbcAuthorizationCodeServices())
                 .approvalStore(jdbcApprovalStore())
+                .userDetailsService(userDetailsService)
                 .setClientDetailsService(jdbcClientDetailsService());
     }
 
